@@ -140,6 +140,13 @@ void u8g2_map(uint8_t max_x, uint8_t max_y, uint8_t x, uint8_t y) {
   u8g2.setFont(u8g2_font_unifont_t_symbols);
   u8g2.setFontPosTop();
   u8g2.drawUTF8(111, 12, "↑");
+
+  for (int i=1;i<2;i++) {
+    u8g2.drawLine(0, round(i*max_y/2), max_x, round(i*max_y/2));
+  }
+  for (int j=1;i<3;i++) {
+    u8g2.drawLine(round(i*max_x/2), 0, round(i*max_x/2), max_y);
+  }
 }
 
 int x = 10;
