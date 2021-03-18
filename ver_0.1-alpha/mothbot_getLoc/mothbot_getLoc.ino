@@ -215,7 +215,7 @@ void u8g2_map(uint8_t max_x, uint8_t max_y, uint8_t x, uint8_t y, char locator[]
   //u8g2.drawStr(105, 8,"sdf");
   u8g2.drawFrame(max_x-1,0,13,max_y);
   
-  u8g2.drawDisc(x,y,2);
+  u8g2.drawCircle(x,y,2);
 
   
   u8g2.setFontDirection(0);
@@ -231,8 +231,8 @@ void u8g2_map(uint8_t max_x, uint8_t max_y, uint8_t x, uint8_t y, char locator[]
   for (int i=1;i<2;i++) {
     u8g2.drawLine(0, round(i*max_y/2), max_x, round(i*max_y/2));
   }
-  for (int j=1;j<3;j++) {
-    u8g2.drawLine(round(j*max_x/3), 0, round(j*max_x/3), max_y);
+  for (int j=1;j<2;j++) {
+    u8g2.drawLine(round(j*max_x/2), 0, round(j*max_x/2), max_y);
   }
 }
 
