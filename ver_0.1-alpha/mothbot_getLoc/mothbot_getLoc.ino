@@ -32,6 +32,73 @@ float lat_bottom = 42.40833333333334;
 float xfrac=0;
 float yfrac=0;
 
+String getLocator(float lat, float lon, int precision) {
+
+  float ydiv_arr[] = {10,1,0.04166666666,0.00416666666,0.00017361111};
+  char d1[]="ABCDEFGHIJKLMNOPQR";
+  char d2[]="ABCDEFGHIJKLMNOPQRSTUVWX";
+  //char locator[9];
+
+  char currentChar = 'B';
+  
+  String locator;
+  
+  int this_precision = 4;
+
+  //strcpy(locator,"-");
+  
+  float x = lon;
+  float y = lat;
+  float rlon,rlat;
+  char cstr[2];
+  int num;
+  
+  while (x < -180) {x += 360;}
+      while (x > 180) {x -=360;}
+      x = x + 180;
+      y = y + 90;
+
+      locator=locator+d1[(int) floor(x/20)];
+
+      //strcat(locator,d1[(int) floor(x/20)];);
+
+      locator=locator+d1[(int) floor(y/10)];
+      
+      //strcat(locator, (char) d1[(int) floor(y/10)]);
+  
+      
+      
+      for (int i=0; i<4; i=i+1) {
+    if (this_precision > i+1) {
+        rlon = fmod(x,ydiv_arr[i]*2);
+        rlat = fmod(y,ydiv_arr[i]);
+      if ((i%2)==0) {
+        num = floor(rlon/(ydiv_arr[i+1]*2));
+        itoa(num, cstr, 10);
+        locator=locator+num;
+        locator=locator+"";
+        //strcat(locator,num);
+        //strcat(locator,"");
+        num = floor(rlat/(ydiv_arr[i+1]));
+        itoa(num, cstr, 10);
+        locator=locator+num;
+        //strcat(locator,num);
+
+      } else {
+        locator=locator+d2[(int) floor(rlon/(ydiv_arr[i+1]*2))];
+        locator=locator+"";
+        locator=locator+d2[(int) floor(rlat/(ydiv_arr[i+1]))];
+        //strcat(locator,d2[(int) floor(rlon/(ydiv_arr[i+1]*2))]);
+        //strcat(locator,"");
+        //strcat(locator,d2[(int) floor(rlat/(ydiv_arr[i+1]))]);
+      }
+    }
+    }  
+    //return locator;
+    Serial.println(locator);
+}
+
+
 void u8g2_prepare(void) {
   u8g2.setFont(u8g2_font_6x10_tf);
   u8g2.setFontRefHeightExtendedText();
@@ -132,20 +199,21 @@ void setup(void) {
   u8g2.firstPage();  
     do {
         
-        u8g2_map(max_x,max_y,-10,-10);
+        u8g2_map(max_x,max_y,-10,-10,"");
     } while( u8g2.nextPage() );
     
 }
 
-void u8g2_map(uint8_t max_x, uint8_t max_y, uint8_t x, uint8_t y) {
+void u8g2_map(uint8_t max_x, uint8_t max_y, uint8_t x, uint8_t y, String locator) {
   //u8g2.drawStr( 10+a*2, 5, "U8g2");
-  
+
   u8g2_prepare();
   u8g2.drawFrame(0,0,max_x,max_y);
   //u8g2.drawFrame(0,0,75,50);
 
   u8g2.setFontDirection(1);
-  u8g2.drawStr(105, 8, "FN42IJ48");
+  //u8g2.drawStr(105, 8,locator.c_str());
+  u8g2.drawStr(105, 8,"sdf");
   u8g2.drawFrame(max_x-1,0,13,max_y);
   
   u8g2.drawDisc(x,y,2);
@@ -177,6 +245,9 @@ void loop(void) {
   unsigned long chars;
   unsigned short sentences, failed;
 
+
+  
+    
   // For one second we parse GPS data and report some key values
   for (unsigned long start = millis(); millis() - start < 1000;)
   {
@@ -197,7 +268,7 @@ void loop(void) {
 
     //flon = -71.29219447509406;
     //flat = 42.40992158770343;
-
+    //getLocator(flat,flon, 4);
  
     float xfrac = (flon-lon_left)/(lon_right-lon_left);
     Serial.print("xfrac=");
@@ -222,7 +293,7 @@ void loop(void) {
     u8g2.firstPage();  
     do {
         
-        u8g2_map(max_x,max_y,x,y);
+        u8g2_map(max_x,max_y,x,y,getLocator(flat,flon, 4));
     } while( u8g2.nextPage() );
     
   
