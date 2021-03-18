@@ -180,7 +180,7 @@ void setup(void) {
   /* U8g2 Project: T6963 Test Board */
   //pinMode(18, OUTPUT);
   //digitalWrite(18, 1);	
-
+ 
   /* U8g2 Project: KS0108 Test Board */
   //pinMode(16, OUTPUT);
   //digitalWrite(16, 0);	
