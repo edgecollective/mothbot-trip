@@ -19,7 +19,7 @@ U8G2_SSD1306_128X64_NONAME_1_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
 
 int x = 10;
 int y = 10;
-
+ 
 int max_x = 96;
 int max_y = 64;
 
