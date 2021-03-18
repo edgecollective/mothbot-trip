@@ -31,71 +31,70 @@ float lat_bottom = 42.40833333333334;
 
 float xfrac=0;
 float yfrac=0;
+char locator[9];
 
-String getLocator(float lat, float lon, int precision) {
+char * getLocator(float lat, float lon, int precision) {
 
   float ydiv_arr[] = {10,1,0.04166666666,0.00416666666,0.00017361111};
   char d1[]="ABCDEFGHIJKLMNOPQR";
   char d2[]="ABCDEFGHIJKLMNOPQRSTUVWX";
-  //char locator[9];
 
-  char currentChar = 'B';
+
+  //char currentChar = 'B';
   
-  String locator;
+  //String locator;
   
   int this_precision = 4;
 
-  //strcpy(locator,"-");
+  strcpy(locator,"");
   
-  float x = lon;
-  float y = lat;
+  float q = lon;
+  float p = lat;
   float rlon,rlat;
-  char cstr[2];
+  char cstr[]="1";
   int num;
   
-  while (x < -180) {x += 360;}
-      while (x > 180) {x -=360;}
-      x = x + 180;
-      y = y + 90;
+  while (q < -180) {q += 360;}
+      while (q > 180) {q -=360;}
+      q = q + 180;
+      p = p + 90;
 
-      locator=locator+d1[(int) floor(x/20)];
+      //locator=locator+d1[(int) floor(q/20)];
 
-      //strcat(locator,d1[(int) floor(x/20)];);
-
-      locator=locator+d1[(int) floor(y/10)];
+      //Serial.println(d1[(int) floor(q/20)]);
       
-      //strcat(locator, (char) d1[(int) floor(y/10)]);
+      strncat(locator,&d1[(int) floor(q/20)],1);
+
+      //locator=locator+d1[(int) floor(p/10)];
+      
+      strncat(locator, &d1[(int) floor(p/10)],1);
   
       
       
       for (int i=0; i<4; i=i+1) {
     if (this_precision > i+1) {
-        rlon = fmod(x,ydiv_arr[i]*2);
-        rlat = fmod(y,ydiv_arr[i]);
+        rlon = fmod(q,ydiv_arr[i]*2);
+        rlat = fmod(p,ydiv_arr[i]);
       if ((i%2)==0) {
         num = floor(rlon/(ydiv_arr[i+1]*2));
         itoa(num, cstr, 10);
-        locator=locator+num;
-        locator=locator+"";
-        //strcat(locator,num);
-        //strcat(locator,"");
+
+        strcat(locator,cstr);
+        strcat(locator,"");
         num = floor(rlat/(ydiv_arr[i+1]));
         itoa(num, cstr, 10);
-        locator=locator+num;
-        //strcat(locator,num);
+        strcat(locator,cstr);
 
       } else {
-        locator=locator+d2[(int) floor(rlon/(ydiv_arr[i+1]*2))];
-        locator=locator+"";
-        locator=locator+d2[(int) floor(rlat/(ydiv_arr[i+1]))];
-        //strcat(locator,d2[(int) floor(rlon/(ydiv_arr[i+1]*2))]);
-        //strcat(locator,"");
-        //strcat(locator,d2[(int) floor(rlat/(ydiv_arr[i+1]))]);
+
+        strncat(locator,&d2[(int) floor(rlon/(ydiv_arr[i+1]*2))],1);
+        strcat(locator,"");
+        strncat(locator,&d2[(int) floor(rlat/(ydiv_arr[i+1]))],1);
       }
     }
     }  
-    //return locator;
-    Serial.println(locator);
+    return (locator);
+    //Serial.println(locator);
 }
 
 
@@ -204,16 +203,17 @@ void setup(void) {
     
 }
 
-void u8g2_map(uint8_t max_x, uint8_t max_y, uint8_t x, uint8_t y, String locator) {
+void u8g2_map(uint8_t max_x, uint8_t max_y, uint8_t x, uint8_t y, char locator[]) {
   //u8g2.drawStr( 10+a*2, 5, "U8g2");
 
+  //Serial.println(locator);
   u8g2_prepare();
   u8g2.drawFrame(0,0,max_x,max_y);
   //u8g2.drawFrame(0,0,75,50);
 
   u8g2.setFontDirection(1);
-  //u8g2.drawStr(105, 8,locator.c_str());
-  u8g2.drawStr(105, 8,"sdf");
+  u8g2.drawStr(105, 8,locator);
+  //u8g2.drawStr(105, 8,"sdf");
   u8g2.drawFrame(max_x-1,0,13,max_y);
   
   u8g2.drawDisc(x,y,2);
@@ -292,7 +292,7 @@ void loop(void) {
 
     u8g2.firstPage();  
     do {
-        
+        Serial.println(getLocator(flat,flon, 4));
         u8g2_map(max_x,max_y,x,y,getLocator(flat,flon, 4));
     } while( u8g2.nextPage() );
     
