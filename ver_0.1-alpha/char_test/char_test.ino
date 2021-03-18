@@ -25,6 +25,8 @@ void loop() {
   Serial.print("locator:");
   Serial.println(locator);
 
+  int val = "N";
+  Serial.println(val);
 
   delay(1000);
   

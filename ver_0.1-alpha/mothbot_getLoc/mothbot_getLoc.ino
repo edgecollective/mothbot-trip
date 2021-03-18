@@ -24,21 +24,17 @@ int max_x = 96;
 int max_y = 64;
 
 
-float lon_left = -71.3;
-float lon_right = -71.29166666666666;
-float lat_top = 42.41250000000001;
-float lat_bottom = 42.40833333333334;
-
 float xfrac=0;
 float yfrac=0;
 char locator[9];
 
 char * getLocator(float lat, float lon, int precision) {
-
+  
   float ydiv_arr[] = {10,1,0.04166666666,0.00416666666,0.00017361111};
   char d1[]="ABCDEFGHIJKLMNOPQR";
   char d2[]="ABCDEFGHIJKLMNOPQRSTUVWX";
 
+  //float left = floor(
 
   //char currentChar = 'B';
   
@@ -198,12 +194,15 @@ void setup(void) {
   u8g2.firstPage();  
     do {
         
-        u8g2_map(max_x,max_y,-10,-10,"");
+       initial_frame(max_x,max_y);
     } while( u8g2.nextPage() );
-    
+
+    delay(1000);
 }
 
 void u8g2_map(uint8_t max_x, uint8_t max_y, uint8_t x, uint8_t y, char locator[]) {
+
+  
   //u8g2.drawStr( 10+a*2, 5, "U8g2");
 
   //Serial.println(locator);
@@ -237,6 +236,39 @@ void u8g2_map(uint8_t max_x, uint8_t max_y, uint8_t x, uint8_t y, char locator[]
   }
 }
 
+void initial_frame(uint8_t max_x, uint8_t max_y) {
+
+  u8g2_prepare();
+  u8g2.drawFrame(0,0,max_x,max_y);
+  //u8g2.drawFrame(0,0,75,50);
+
+  u8g2.setFontDirection(1);
+  u8g2.drawStr(105, 8,"GPS ...");
+  //u8g2.drawStr(105, 8,"sdf");
+  u8g2.drawFrame(max_x-1,0,13,max_y);
+  
+  //u8g2.drawDisc(x,y,2);
+
+  u8g2.setFontDirection(0);
+  u8g2.setFont(u8g2_font_6x10_tf);
+  u8g2.drawStr(113, 1, "N");
+
+  
+  //u8g2.drawStr(111, 1, "OK");
+  u8g2.setFont(u8g2_font_unifont_t_symbols);
+  u8g2.setFontPosTop();
+  u8g2.drawUTF8(111, 12, "↑");
+
+/*
+  for (int i=1;i<2;i++) {
+    u8g2.drawLine(0, round(i*max_y/2), max_x, round(i*max_y/2));
+  }
+  for (int j=1;j<3;j++) {
+    u8g2.drawLine(round(j*max_x/3), 0, round(j*max_x/3), max_y);
+  }
+*/
+
+}
 
 
 void loop(void) {
@@ -262,14 +294,26 @@ void loop(void) {
 
   if (newData)
   {
+
+
     float flat, flon;
     unsigned long age;
     gps.f_get_position(&flat, &flon, &age);
+    
+    float unit = 0.004166666666666667;
+  
+    float myLat = flat;
+    if (myLat > 85) myLat = 85;
+    if (myLat < -85) myLat = -85;
+    
+    float lon_left = floor(flon/(unit*2))*(unit*2);
+    float lon_right = ceil(flon/(unit*2))*(unit*2);
+    float lat_top = ceil(myLat/unit)*unit;
+    float lat_bottom=floor(myLat/unit)*unit;
+  
+    Serial.print("lon_left:");
+    Serial.println(lon_left);
 
-    //flon = -71.29219447509406;
-    //flat = 42.40992158770343;
-    //getLocator(flat,flon, 4);
- 
     float xfrac = (flon-lon_left)/(lon_right-lon_left);
     Serial.print("xfrac=");
     Serial.println(xfrac);
